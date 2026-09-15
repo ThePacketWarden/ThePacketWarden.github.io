@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>PacketWarden</title>
+<meta name="description" content="Networks, Linux, detection engineering. Houston, TX.">
+<meta name="theme-color" content="#030604">
+<meta name="color-scheme" content="only dark">
+<style>
+  :root {
+    --void:  #030604;
+    --p:     #4BFF6B;
+    --p-mid: #2BB544;
+    --p-low: #157A28;
+    --halo:  rgba(75, 255, 107, 0.5);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body { margin: 0; min-height: 100%; background: var(--void); }
+
+  body {
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+                 "Liberation Mono", "DejaVu Sans Mono", monospace;
+    color: var(--p-mid);
+    font-size: clamp(12px, 3.2vw, 14px);
+    line-height: 1.7;
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    padding: clamp(24px, 8vw, 88px);
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    left: -10%;
+    top: 50%;
+    width: 90vmax;
+    height: 60vmax;
+    transform: translateY(-55%);
+    pointer-events: none;
+    background: radial-gradient(closest-side at 35% 45%,
+      rgba(75,255,107,0.085), transparent 72%);
+    z-index: 0;
+  }
+
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9;
+    background: repeating-linear-gradient(to bottom,
+      rgba(0,0,0,0.26) 0px, rgba(0,0,0,0.26) 1px,
+      transparent 1px, transparent 3px);
+  }
+
+  main { position: relative; z-index: 2; width: 100%; max-width: 600px; }
+
+  /* ---- wordmark, painted in 7 raster rows ---- */
+
+  .mark { margin: 0; line-height: 0; position: relative; }
+
+  .wordmark {
+    display: block;
+    width: 100%;
+    height: auto;
+    fill: var(--p);
+    filter: drop-shadow(0 0 1px var(--halo))
+            drop-shadow(0 0 10px rgba(75,255,107,0.45))
+            drop-shadow(0 0 34px rgba(75,255,107,0.22));
+    animation: raster 620ms steps(7, end) both;
+  }
+
+  @keyframes raster {
+    from { clip-path: inset(0 0 100% 0); }
+    to   { clip-path: inset(0 0 0 0); }
+  }
+
+  .beam {
+    position: absolute;
+    left: -4%; right: -4%;
+    height: 2px; top: 0;
+    background: var(--p);
+    box-shadow: 0 0 10px var(--halo), 0 0 28px var(--halo);
+    opacity: 0;
+    animation: sweep 620ms steps(7, end) both;
+    pointer-events: none;
+  }
+
+  @keyframes sweep {
+    0%   { top: 0;    opacity: 0.9; }
+    99%  { top: 100%; opacity: 0.9; }
+    100% { top: 100%; opacity: 0;   }
+  }
+
+  .trade {
+    margin: 2em 0 0;
+    max-width: 42ch;
+    animation: up 500ms ease-out 620ms both;
+  }
+
+  @keyframes up {
+    from { opacity: 0; transform: translate3d(0, 6px, 0); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  /* ---- tree ---- */
+
+  .term {
+    margin: 2.6em 0 0;
+    animation: up 500ms ease-out 780ms both;
+  }
+
+  .prompt { color: var(--p-low); margin: 0 0 1em; }
+  .prompt .cmd { color: var(--p-mid); }
+
+  .tree {
+    font: inherit;
+    margin: 0;
+    white-space: pre;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tree .b { color: var(--p-low); }   /* box drawing */
+  .tree .d { color: var(--p-mid); }   /* directory */
+  .tree .s { color: var(--p-low); }   /* symlink arrow + target */
+
+  .tree a.t { color: var(--p-low); text-shadow: none; }
+
+  .tree a {
+    color: var(--p);
+    text-decoration: none;
+    text-shadow: 0 0 8px rgba(75,255,107,0.4);
+    transition: color 90ms linear, background-color 90ms linear;
+  }
+
+  .tree a:hover,
+  .tree a:focus-visible {
+    background: var(--p);
+    color: var(--void);
+    text-shadow: none;
+    outline: none;
+  }
+
+  .cursor {
+    display: inline-block;
+    width: 0.62em; height: 1.02em;
+    background: var(--p);
+    vertical-align: -0.16em;
+    box-shadow: 0 0 9px var(--halo);
+    animation: blink 1.08s steps(1, end) infinite;
+  }
+
+  @keyframes blink { 50% { opacity: 0; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wordmark, .trade, .term { animation: none; }
+    .beam { display: none; }
+    .cursor { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+  <main>
+    <h1 class="mark">
+      <svg class="wordmark" viewBox="0 0 71 7" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="PacketWarden" shape-rendering="crispEdges" preserveAspectRatio="xMinYMid meet"><rect x="0" y="0" width="4" height="1"/><rect x="0" y="1" width="1" height="1"/><rect x="4" y="1" width="1" height="1"/><rect x="0" y="2" width="1" height="1"/><rect x="4" y="2" width="1" height="1"/><rect x="0" y="3" width="4" height="1"/><rect x="0" y="4" width="1" height="1"/><rect x="0" y="5" width="1" height="1"/><rect x="0" y="6" width="1" height="1"/><rect x="7" y="0" width="3" height="1"/><rect x="6" y="1" width="1" height="1"/><rect x="10" y="1" width="1" height="1"/><rect x="6" y="2" width="1" height="1"/><rect x="10" y="2" width="1" height="1"/><rect x="6" y="3" width="5" height="1"/><rect x="6" y="4" width="1" height="1"/><rect x="10" y="4" width="1" height="1"/><rect x="6" y="5" width="1" height="1"/><rect x="10" y="5" width="1" height="1"/><rect x="6" y="6" width="1" height="1"/><rect x="10" y="6" width="1" height="1"/><rect x="13" y="0" width="3" height="1"/><rect x="12" y="1" width="1" height="1"/><rect x="16" y="1" width="1" height="1"/><rect x="12" y="2" width="1" height="1"/><rect x="12" y="3" width="1" height="1"/><rect x="12" y="4" width="1" height="1"/><rect x="12" y="5" width="1" height="1"/><rect x="16" y="5" width="1" height="1"/><rect x="13" y="6" width="3" height="1"/><rect x="18" y="0" width="1" height="1"/><rect x="22" y="0" width="1" height="1"/><rect x="18" y="1" width="1" height="1"/><rect x="21" y="1" width="1" height="1"/><rect x="18" y="2" width="1" height="1"/><rect x="20" y="2" width="1" height="1"/><rect x="18" y="3" width="2" height="1"/><rect x="18" y="4" width="1" height="1"/><rect x="20" y="4" width="1" height="1"/><rect x="18" y="5" width="1" height="1"/><rect x="21" y="5" width="1" height="1"/><rect x="18" y="6" width="1" height="1"/><rect x="22" y="6" width="1" height="1"/><rect x="24" y="0" width="5" height="1"/><rect x="24" y="1" width="1" height="1"/><rect x="24" y="2" width="1" height="1"/><rect x="24" y="3" width="4" height="1"/><rect x="24" y="4" width="1" height="1"/><rect x="24" y="5" width="1" height="1"/><rect x="24" y="6" width="5" height="1"/><rect x="30" y="0" width="5" height="1"/><rect x="32" y="1" width="1" height="1"/><rect x="32" y="2" width="1" height="1"/><rect x="32" y="3" width="1" height="1"/><rect x="32" y="4" width="1" height="1"/><rect x="32" y="5" width="1" height="1"/><rect x="32" y="6" width="1" height="1"/><rect x="36" y="0" width="1" height="1"/><rect x="40" y="0" width="1" height="1"/><rect x="36" y="1" width="1" height="1"/><rect x="40" y="1" width="1" height="1"/><rect x="36" y="2" width="1" height="1"/><rect x="40" y="2" width="1" height="1"/><rect x="36" y="3" width="1" height="1"/><rect x="38" y="3" width="1" height="1"/><rect x="40" y="3" width="1" height="1"/><rect x="36" y="4" width="1" height="1"/><rect x="38" y="4" width="1" height="1"/><rect x="40" y="4" width="1" height="1"/><rect x="36" y="5" width="2" height="1"/><rect x="39" y="5" width="2" height="1"/><rect x="36" y="6" width="1" height="1"/><rect x="40" y="6" width="1" height="1"/><rect x="43" y="0" width="3" height="1"/><rect x="42" y="1" width="1" height="1"/><rect x="46" y="1" width="1" height="1"/><rect x="42" y="2" width="1" height="1"/><rect x="46" y="2" width="1" height="1"/><rect x="42" y="3" width="5" height="1"/><rect x="42" y="4" width="1" height="1"/><rect x="46" y="4" width="1" height="1"/><rect x="42" y="5" width="1" height="1"/><rect x="46" y="5" width="1" height="1"/><rect x="42" y="6" width="1" height="1"/><rect x="46" y="6" width="1" height="1"/><rect x="48" y="0" width="4" height="1"/><rect x="48" y="1" width="1" height="1"/><rect x="52" y="1" width="1" height="1"/><rect x="48" y="2" width="1" height="1"/><rect x="52" y="2" width="1" height="1"/><rect x="48" y="3" width="4" height="1"/><rect x="48" y="4" width="1" height="1"/><rect x="50" y="4" width="1" height="1"/><rect x="48" y="5" width="1" height="1"/><rect x="51" y="5" width="1" height="1"/><rect x="48" y="6" width="1" height="1"/><rect x="52" y="6" width="1" height="1"/><rect x="54" y="0" width="4" height="1"/><rect x="54" y="1" width="1" height="1"/><rect x="58" y="1" width="1" height="1"/><rect x="54" y="2" width="1" height="1"/><rect x="58" y="2" width="1" height="1"/><rect x="54" y="3" width="1" height="1"/><rect x="58" y="3" width="1" height="1"/><rect x="54" y="4" width="1" height="1"/><rect x="58" y="4" width="1" height="1"/><rect x="54" y="5" width="1" height="1"/><rect x="58" y="5" width="1" height="1"/><rect x="54" y="6" width="4" height="1"/><rect x="60" y="0" width="5" height="1"/><rect x="60" y="1" width="1" height="1"/><rect x="60" y="2" width="1" height="1"/><rect x="60" y="3" width="4" height="1"/><rect x="60" y="4" width="1" height="1"/><rect x="60" y="5" width="1" height="1"/><rect x="60" y="6" width="5" height="1"/><rect x="66" y="0" width="1" height="1"/><rect x="70" y="0" width="1" height="1"/><rect x="66" y="1" width="2" height="1"/><rect x="70" y="1" width="1" height="1"/><rect x="66" y="2" width="1" height="1"/><rect x="68" y="2" width="1" height="1"/><rect x="70" y="2" width="1" height="1"/><rect x="66" y="3" width="1" height="1"/><rect x="68" y="3" width="1" height="1"/><rect x="70" y="3" width="1" height="1"/><rect x="66" y="4" width="1" height="1"/><rect x="69" y="4" width="2" height="1"/><rect x="66" y="5" width="1" height="1"/><rect x="70" y="5" width="1" height="1"/><rect x="66" y="6" width="1" height="1"/><rect x="70" y="6" width="1" height="1"/></svg>
+      <span class="beam" aria-hidden="true"></span>
+    </h1>
+
+    <p class="trade">Networks, Linux, detection engineering. Houston, TX.</p>
+
+    <div class="term">
+<pre class="tree">.
+<span class="b">├──</span> <a href="readme.html">README.txt</a>
+<span class="b">├──</span> <span class="d">work/</span>
+<span class="b">│   └──</span> <a href="https://github.com/msm8916-mainline/lk2nd/pull/753">first-pull-request</a> <span class="s">-&gt; #753</span>
+<span class="b">├──</span> <a href="https://github.com/ThePacketWarden">github</a> <span class="s">-&gt; <a class="t" href="https://github.com/ThePacketWarden">ThePacketWarden</a></span>
+<span class="b">├──</span> <span id="m-l">contact</span> <span class="s">-&gt; <span id="m-t">packetwarden [at] proton.me</span></span>
+<span class="b">└──</span> <a href="https://signal.me/#eu/3xXWIZkzr3HrpzHfBL_L0taTZ-Mt56hHbqYhwqd0a0IXvXMrdHNKkIIAIpcAv5WL">signal</a> <span class="s">-&gt; <a class="t" href="https://signal.me/#eu/3xXWIZkzr3HrpzHfBL_L0taTZ-Mt56hHbqYhwqd0a0IXvXMrdHNKkIIAIpcAv5WL">packetwarden.22</a></span>
+
+<span class="b">1 directory, 5 files</span>
+<span class="b">packetwarden@houston:~$</span> <span class="cursor" aria-hidden="true"></span></pre>
+    </div>
+  </main>
+
+
+<script>
+(function () {
+  var u = "packetwarden", d = ["proton", "me"].join(".");
+  var a = u + String.fromCharCode(64) + d;
+  var href = "mail" + "to:" + a;
+  var lbl = document.getElementById("m-l");
+  var tgt = document.getElementById("m-t");
+  lbl.innerHTML = '<a href="' + href + '">contact</a>';
+  tgt.innerHTML = '<a class="t" href="' + href + '">' + a + '</a>';
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>404</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#030604">
+<meta name="color-scheme" content="only dark">
+<style>
+  :root {
+    --void:  #030604;
+    --p:     #4BFF6B;
+    --p-mid: #2BB544;
+    --p-low: #157A28;
+    --halo:  rgba(75,255,107,0.5);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; background: var(--void); }
+  body {
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+                 "Liberation Mono", "DejaVu Sans Mono", monospace;
+    color: var(--p-mid);
+    font-size: clamp(12px, 3.2vw, 14px);
+    line-height: 1.7;
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    padding: clamp(24px, 8vw, 88px);
+    position: relative;
+    overflow-x: hidden;
+  }
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9;
+    background: repeating-linear-gradient(to bottom,
+      rgba(0,0,0,0.26) 0px, rgba(0,0,0,0.26) 1px,
+      transparent 1px, transparent 3px);
+  }
+  main { position: relative; z-index: 2; width: 100%; max-width: 600px; }
+  pre {
+    font: inherit;
+    margin: 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .u { color: var(--p-low); }
+  .cmd { color: var(--p-mid); }
+  .err { color: var(--p); text-shadow: 0 0 8px rgba(75,255,107,0.4); }
+  a {
+    color: var(--p);
+    text-decoration: none;
+    text-shadow: 0 0 8px rgba(75,255,107,0.4);
+  }
+  a:hover, a:focus-visible {
+    background: var(--p); color: var(--void);
+    text-shadow: none; outline: none;
+  }
+  .cursor {
+    display: inline-block;
+    width: 0.62em; height: 1.02em;
+    background: var(--p);
+    vertical-align: -0.16em;
+    box-shadow: 0 0 9px var(--halo);
+    animation: blink 1.08s steps(1, end) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .cursor { animation: none; } }
+</style>
+</head>
+<body>
+<main>
+<pre><span class="u">packetwarden@houston:~$</span> <span class="cmd">cat <span id="p1">.</span></span>
+<span class="err">bash: <span id="p2">.</span>: No such file or directory</span>
+
+<span class="u">packetwarden@houston:~$</span> <a href="/">cd ~</a>
+<span class="u">packetwarden@houston:~$</span> <span class="cursor" aria-hidden="true"></span></pre>
+</main>
+<script>
+(function () {
+  var p = location.pathname || "/";
+  if (p.length > 60) p = p.slice(0, 57) + "...";
+  document.getElementById("p1").textContent = p;
+  document.getElementById("p2").textContent = p;
+})();
+</script>
+</body>
+</html>

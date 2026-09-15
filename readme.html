@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>README.txt</title>
+<meta name="theme-color" content="#030604">
+<meta name="color-scheme" content="only dark">
+<style>
+  :root {
+    --void:  #030604;
+    --p:     #4BFF6B;
+    --p-mid: #2BB544;
+    --p-low: #157A28;
+    --halo:  rgba(75,255,107,0.5);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; background: var(--void); }
+
+  body {
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+                 "Liberation Mono", "DejaVu Sans Mono", monospace;
+    color: var(--p-mid);
+    font-size: clamp(11px, 3.1vw, 13.5px);
+    line-height: 1.62;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9;
+    background: repeating-linear-gradient(to bottom,
+      rgba(0,0,0,0.26) 0px, rgba(0,0,0,0.26) 1px,
+      transparent 1px, transparent 3px);
+  }
+
+  /* ---- buffer ---- */
+
+  .buf {
+    flex: 1;
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    align-content: start;
+    column-gap: 1ch;
+    padding: 0.8em 0.7em 1.6em 0.5em;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  .ln {
+    color: var(--p-low);
+    text-align: right;
+    user-select: none;
+    white-space: pre;
+  }
+
+  .tilde {
+    color: var(--p-low);
+    text-align: left;
+    user-select: none;
+    opacity: 0.65;
+  }
+
+  .lt { color: var(--p-mid); }
+
+  .buf a {
+    color: var(--p);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-shadow: 0 0 8px rgba(75,255,107,0.4);
+  }
+  .buf a:hover, .buf a:focus-visible {
+    background: var(--p); color: var(--void);
+    text-shadow: none; text-decoration: none; outline: none;
+  }
+
+  /* ---- status line: reverse video, like vim laststatus=2 ---- */
+
+  .status {
+    position: sticky;
+    z-index: 10;
+    bottom: 1.62em;
+    background: var(--p-mid);
+    color: var(--void);
+    display: flex;
+    justify-content: space-between;
+    gap: 1ch;
+    padding: 0 0.6em;
+    white-space: pre;
+    overflow: hidden;
+  }
+
+  .status .mod { font-weight: 700; }
+
+  /* ---- command line ---- */
+
+  .cmdline {
+    position: sticky;
+    bottom: 0;
+    background: var(--void);
+    padding: 0 0.6em;
+    color: var(--p-mid);
+    white-space: pre;
+  }
+
+  .cmdline a {
+    color: var(--p);
+    text-decoration: none;
+    text-shadow: 0 0 8px rgba(75,255,107,0.4);
+  }
+  .cmdline a:hover, .cmdline a:focus-visible {
+    background: var(--p); color: var(--void);
+    text-shadow: none; outline: none;
+  }
+
+  .cursor {
+    display: inline-block;
+    width: 0.62em; height: 1.02em;
+    background: var(--p);
+    vertical-align: -0.16em;
+    box-shadow: 0 0 9px var(--halo);
+    animation: blink 1.08s steps(1, end) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .cursor { animation: none; } }
+</style>
+</head>
+<body>
+
+<div class="buf">
+<span class="ln">  1</span><span class="lt">PACKETWARDEN</span>
+<span class="ln">  2</span><span class="lt">============</span>
+<span class="ln">  3</span><span class="lt">&nbsp;</span>
+<span class="ln">  4</span><span class="lt">Networking and security, self-taught.</span>
+<span class="ln">  5</span><span class="lt">Four years at it.</span>
+<span class="ln">  6</span><span class="lt">Houston, TX.</span>
+<span class="ln">  7</span><span class="lt">&nbsp;</span>
+<span class="ln">  8</span><span class="lt">WHAT I WORK ON</span>
+<span class="ln">  9</span><span class="lt">--------------</span>
+<span class="ln"> 10</span><span class="lt">&nbsp;</span>
+<span class="ln"> 11</span><span class="lt">networking</span>
+<span class="ln"> 12</span><span class="lt">  Routing, switching, VLANs, OSPF</span>
+<span class="ln"> 13</span><span class="lt">  CCNA 200-301, sitting it in December</span>
+<span class="ln"> 14</span><span class="lt">&nbsp;</span>
+<span class="ln"> 15</span><span class="lt">linux</span>
+<span class="ln"> 16</span><span class="lt">  Fedora daily driver, KDE Plasma</span>
+<span class="ln"> 17</span><span class="lt">  System config and troubleshooting</span>
+<span class="ln"> 18</span><span class="lt">  Read and adapt shell scripts</span>
+<span class="ln"> 19</span><span class="lt">&nbsp;</span>
+<span class="ln"> 20</span><span class="lt">detection</span>
+<span class="ln"> 21</span><span class="lt">  Where networking and logs meet</span>
+<span class="ln"> 22</span><span class="lt">  Where I am pointed next</span>
+<span class="ln"> 23</span><span class="lt">&nbsp;</span>
+<span class="ln"> 24</span><span class="lt">SCHOOL</span>
+<span class="ln"> 25</span><span class="lt">------</span>
+<span class="ln"> 26</span><span class="lt">&nbsp;</span>
+<span class="ln"> 27</span><span class="lt">AAS, Computer Systems Networking</span>
+<span class="ln"> 28</span><span class="lt">Cybersecurity specialization</span>
+<span class="ln"> 29</span><span class="lt">11 credits remaining</span>
+<span class="ln"> 30</span><span class="lt">&nbsp;</span>
+<span class="ln"> 31</span><span class="lt">SHIPPED</span>
+<span class="ln"> 32</span><span class="lt">-------</span>
+<span class="ln"> 33</span><span class="lt">&nbsp;</span>
+<span class="ln"> 34</span><span class="lt">lk2nd</span>
+<span class="ln"> 35</span><span class="lt">  Galaxy S4 (SGH-M919) device support</span>
+<span class="ln"> 36</span><span class="lt">  Merged upstream</span>
+<span class="ln"> 37</span><span class="lt">  <a href="https://github.com/msm8916-mainline/lk2nd/pull/753">lk2nd#753</a></span>
+<span class="ln"> 38</span><span class="lt">&nbsp;</span>
+<span class="ln"> 39</span><span class="lt">postmarketOS</span>
+<span class="ln"> 40</span><span class="lt">  Port for the same device</span>
+<span class="ln"> 41</span><span class="lt">&nbsp;</span>
+<span class="ln"> 42</span><span class="lt">CONTACT</span>
+<span class="ln"> 43</span><span class="lt">-------</span>
+<span class="ln"> 44</span><span class="lt">&nbsp;</span>
+<span class="ln"> 45</span><span class="lt">  <a href="https://github.com/ThePacketWarden">github.com/ThePacketWarden</a></span>
+<span class="ln"> 46</span><span class="lt">  <span id="m-t">packetwarden [at] proton.me</span></span>
+<span class="ln"> 47</span><span class="lt">  <a href="https://signal.me/#eu/3xXWIZkzr3HrpzHfBL_L0taTZ-Mt56hHbqYhwqd0a0IXvXMrdHNKkIIAIpcAv5WL">packetwarden.22</a> (signal)</span>
+<span class="tilde">~</span><span class="lt"></span>
+<span class="tilde">~</span><span class="lt"></span>
+<span class="tilde">~</span><span class="lt"></span>
+<span class="tilde">~</span><span class="lt"></span>
+<span class="tilde">~</span><span class="lt"></span>
+<span class="tilde">~</span><span class="lt"></span>
+<span class="tilde">~</span><span class="lt"></span>
+</div>
+
+<div class="status">
+  <span>"README.txt"</span>
+  <span>47L, 721B</span>
+</div>
+
+<div class="cmdline"><a href="index.html">:q</a><span class="cursor" aria-hidden="true"></span></div>
+
+<script>
+(function () {
+  var u = "packetwarden", d = ["proton", "me"].join(".");
+  var a = u + String.fromCharCode(64) + d;
+  var t = document.getElementById("m-t");
+  if (t) t.innerHTML = '<a href="mail' + 'to:' + a + '">' + a + '</a>';
+})();
+</script>
+
+</body>
+</html>

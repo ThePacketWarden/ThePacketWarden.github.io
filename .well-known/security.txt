@@ -1,0 +1,7 @@
+# security.txt for thepacketwarden.github.io
+# RFC 9116
+
+Contact: https://signal.me/#eu/3xXWIZkzr3HrpzHfBL_L0taTZ-Mt56hHbqYhwqd0a0IXvXMrdHNKkIIAIpcAv5WL
+Expires: 2027-09-15T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://thepacketwarden.github.io/.well-known/security.txt
