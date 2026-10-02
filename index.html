@@ -286,7 +286,7 @@
   var CMDS = ["help", "ls", "cd", "cat", "open", "now", "contact", "tree", "whoami", "id",
               "pwd", "hostname", "uname", "date", "echo", "history", "clear", "vim", "less", "exit"];
 
-  var cwd = "~", hist = [], hpos = 0, used = false, busy = false;
+  var cwd = "~", hist = [], hpos = 0, used = false, busy = false, lastTab = null;
   var logs = { "auth.log": [], "ufw.log": [] };
 
   /* ---------- output helpers (textContent only: nothing typed is ever parsed as HTML) */
@@ -531,15 +531,18 @@
   function complete() {
     var v = inp.value, parts = v.split(" "), last = parts[parts.length - 1];
     var pool = parts.length === 1 ? CMDS : (FS[cwd] || []).concat(parts[0] === "cat" && cwd === "~" ? [".bash_history"] : []);
+    if (!v.trim()) return;
     var hits = pool.filter(function (x) { return x.indexOf(last) === 0; });
     if (hits.length === 1) {
       parts[parts.length - 1] = hits[0] + (/\/$/.test(hits[0]) ? "" : " ");
       inp.value = parts.join(" ");
     } else if (hits.length > 1) {
-      echo(v); say(hits.join("  "));
+      // like bash: first tab fills the common prefix, second tab in a row lists
+      if (lastTab === v) { echo(v); say(hits.join("  ")); }
       var common = hits.reduce(function (a, b) { var i = 0; while (i < a.length && a[i] === b[i]) i++; return a.slice(0, i); });
       parts[parts.length - 1] = common; inp.value = parts.join(" ");
     }
+    lastTab = inp.value;
   }
 
   /* ---------- mirror the hidden input into the visible line */
@@ -561,12 +564,13 @@
 
   inp.addEventListener("keydown", function (e) {
     if (busy) { e.preventDefault(); return; }
+    if (e.key !== "Tab") lastTab = null;
     if (e.key === "Enter") {
       e.preventDefault(); used = true;
       var v = inp.value; inp.value = "";
       exec(v); render(); line.scrollIntoView({ block: "nearest" });
     } else if (e.key === "Tab") {
-      e.preventDefault(); complete(); poke();
+      e.preventDefault(); complete(); poke(); return;
     } else if (e.key === "ArrowUp") {
       e.preventDefault(); if (hpos > 0) { hpos--; inp.value = hist[hpos]; } poke();
       setTimeout(function () { inp.setSelectionRange(inp.value.length, inp.value.length); render(); });
