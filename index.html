@@ -160,6 +160,64 @@
 
   @keyframes blink { 50% { opacity: 0; } }
 
+  /* ---- live shell ---- */
+
+  .out, .line {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  .out .echo .ps, .line .ps { color: var(--p-low); }
+  .out .echo .c { color: var(--p); }
+  .out .dim { color: var(--p-low); }
+
+  .out a, .out .lnk {
+    color: var(--p);
+    text-decoration: none;
+    text-shadow: 0 0 8px rgba(75,255,107,0.4);
+  }
+  .out a:hover, .out a:focus-visible {
+    background: var(--p); color: var(--void);
+    text-shadow: none; outline: none;
+  }
+
+  .line { display: block; position: relative; cursor: text; }
+  .line[hidden] { display: none; }
+  .typed { color: var(--p); }
+  .hint { color: var(--p-low); margin-left: 1ch; }
+
+  /* the real input is invisible; its value is mirrored into .typed so the
+     block cursor can sit on a character. 16px stops iOS zooming on focus */
+  #cmd {
+    position: absolute; inset: 0;
+    width: 100%; margin: 0; padding: 0; border: 0;
+    font-size: 16px;
+    opacity: 0;
+    background: transparent; color: transparent; caret-color: transparent;
+  }
+
+  /* cursor sits on a character: blink the block, keep the glyph readable */
+  #c-cur {
+    width: auto; min-width: 0.62em; height: auto;
+    vertical-align: baseline;
+    color: var(--void);
+    animation: blinkc 1.08s steps(1, end) infinite;
+  }
+  #c-cur.solid { animation: none; }
+  #c-cur.idle {
+    animation: none;
+    background: transparent;
+    color: var(--p);
+    box-shadow: inset 0 0 0 1px var(--p);
+  }
+  @keyframes blinkc {
+    50% { background: transparent; color: var(--p); box-shadow: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #c-cur { animation: none; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .wordmark, .trade, .term { animation: none; }
     .beam { display: none; }
@@ -186,8 +244,9 @@
 <span class="b">├──</span> <span id="m-l">contact</span> <span class="s">-&gt; <span id="m-t">packetwarden [at] proton.me</span></span>
 <span class="b">└──</span> <a href="https://signal.me/#eu/3xXWIZkzr3HrpzHfBL_L0taTZ-Mt56hHbqYhwqd0a0IXvXMrdHNKkIIAIpcAv5WL">signal</a> <span class="s">-&gt; <a class="t" href="https://signal.me/#eu/3xXWIZkzr3HrpzHfBL_L0taTZ-Mt56hHbqYhwqd0a0IXvXMrdHNKkIIAIpcAv5WL">packetwarden.22</a></span>
 
-<span class="b">1 directory, 5 files</span>
-<span class="b">packetwarden@houston:~$</span> <span class="cursor" aria-hidden="true"></span></pre>
+<span class="b">1 directory, 5 files</span></pre>
+<div class="out" id="out" aria-live="polite"></div>
+<label class="line" id="line"><span class="ps" id="ps">packetwarden@houston:~$</span> <span class="typed"><span id="c-pre"></span><span class="cursor" id="c-cur" aria-hidden="true"></span><span id="c-post"></span><span class="hint" id="c-hint" hidden>type help</span></span><input id="cmd" type="text" aria-label="shell command" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go"></label>
     </div>
   </main>
 
@@ -203,5 +262,339 @@
   tgt.innerHTML = '<a class="t" href="' + href + '">' + a + '</a>';
 })();
 </script>
+
+<script>
+/* a small, honest shell. everything is static: nothing you type leaves your browser. */
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var out = $("out"), line = $("line"), inp = $("cmd"), ps = $("ps"),
+      cPre = $("c-pre"), cCur = $("c-cur"), cPost = $("c-post"), hint = $("c-hint");
+  if (!inp) return;
+
+  var MAIL = "packetwarden" + String.fromCharCode(64) + ["proton", "me"].join(".");
+  var SIGNAL = "https://signal.me/#eu/3xXWIZkzr3HrpzHfBL_L0taTZ-Mt56hHbqYhwqd0a0IXvXMrdHNKkIIAIpcAv5WL";
+  var LINKS = {
+    "github":             ["https://github.com/ThePacketWarden", "ThePacketWarden"],
+    "contact":            ["mailto:" + MAIL, MAIL],
+    "signal":             [SIGNAL, "packetwarden.22"],
+    "first-pull-request": ["https://github.com/msm8916-mainline/lk2nd/pull/753", "lk2nd#753"]
+  };
+  var FS = {
+    "~":      ["README.txt", "work/", "github", "contact", "signal"],
+    "~/work": ["first-pull-request"]
+  };
+  var CMDS = ["help", "ls", "cd", "cat", "open", "now", "contact", "tree", "whoami", "id",
+              "pwd", "hostname", "uname", "date", "echo", "history", "clear", "vim", "less", "exit"];
+
+  var cwd = "~", hist = [], hpos = 0, used = false, busy = false;
+  var logs = { "auth.log": [], "ufw.log": [] };
+
+  /* ---------- output helpers (textContent only: nothing typed is ever parsed as HTML) */
+
+  function add(node) { out.appendChild(node); return node; }
+  function div(cls) { var d = document.createElement("div"); if (cls) d.className = cls; return d; }
+  function say(text, cls) {
+    String(text).split("\n").forEach(function (t) {
+      var d = div(cls); d.textContent = t === "" ? " " : t; add(d);
+    });
+  }
+  function link(label, href) {
+    var a = document.createElement("a");
+    a.href = href; a.textContent = label;
+    if (/^https?:/.test(href)) { a.target = "_blank"; a.rel = "noopener noreferrer"; }
+    return a;
+  }
+  function sayLink(prefix, label, href, suffix) {
+    var d = div();
+    if (prefix) d.appendChild(document.createTextNode(prefix));
+    d.appendChild(link(label, href));
+    if (suffix) d.appendChild(document.createTextNode(suffix));
+    add(d);
+  }
+  function prompt() { return "packetwarden@houston:" + cwd + "$"; }
+  function echo(text) {
+    var d = div("echo"), p = document.createElement("span"), c = document.createElement("span");
+    p.className = "ps"; p.textContent = prompt();
+    c.className = "c"; c.textContent = text;
+    d.appendChild(p); d.appendChild(document.createTextNode(" ")); d.appendChild(c);
+    add(d);
+  }
+  function stamp() {
+    var t = new Date(), m = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    var z = function (n) { return (n < 10 ? "0" : "") + n; };
+    return m[t.getMonth()] + " " + z(t.getDate()) + " " + z(t.getHours()) + ":" + z(t.getMinutes()) + ":" + z(t.getSeconds());
+  }
+
+  /* ---------- README comes from about.html so there's only one copy to maintain */
+
+  var readmeP = null;
+  function readme() {
+    if (!readmeP) readmeP = fetch("about.html").then(function (r) { return r.text(); }).then(function (t) {
+      return Array.prototype.slice.call(new DOMParser().parseFromString(t, "text/html").querySelectorAll(".buf .lt"));
+    });
+    return readmeP;
+  }
+  function printNodes(nodes) {
+    nodes.forEach(function (n) {
+      var d = div();
+      Array.prototype.forEach.call(n.childNodes, function (c) {
+        if (c.nodeType === 1 && c.id === "m-t") { d.appendChild(link(MAIL, "mailto:" + MAIL)); return; }
+        var k = document.importNode(c, true);
+        if (k.nodeType === 1) { k.removeAttribute("id"); if (k.tagName === "A" && /^https?:/.test(k.getAttribute("href"))) { k.target = "_blank"; k.rel = "noopener noreferrer"; } }
+        d.appendChild(k);
+      });
+      if (!d.textContent.replace(/ /g, "").trim()) d.textContent = " ";
+      add(d);
+    });
+  }
+  function nowLines(nodes) {
+    var txt = nodes.map(function (n) { return n.textContent.replace(/ /g, "").trimEnd(); });
+    var i = txt.indexOf("NOW"); if (i < 0) return [];
+    var res = [];
+    for (var j = i + 3; j < nodes.length && txt[j].trim(); j++) res.push(nodes[j]);
+    return res;
+  }
+  function async(p) {
+    busy = true; line.hidden = true;
+    p.catch(function () { say("cat: README.txt: read error (try again, or open it: vim README.txt)"); })
+     .then(function () { busy = false; line.hidden = false; render(); inp.focus({ preventScroll: true }); line.scrollIntoView({ block: "nearest" }); });
+  }
+
+  /* ---------- paths */
+
+  function norm(p) {
+    p = (p || "").replace(/\/+$/, "").replace(/^\.\//, "");
+    if (p === "" || p === "~" || p === "/home/packetwarden") return "~";
+    if (p === "~/work" || p === "/home/packetwarden/work") return "~/work";
+    if (p === ".") return cwd;
+    if (p === "..") return cwd === "~/work" ? "~" : "..";
+    if (p === "work" && cwd === "~") return "~/work";
+    if (p === "../work" && cwd === "~/work") return "~/work";
+    return p;
+  }
+  function here(name) {
+    var list = FS[cwd] || [];
+    return list.indexOf(name) >= 0 || list.indexOf(name + "/") >= 0;
+  }
+
+  /* ---------- commands */
+
+  var run = {
+    help: function () {
+      say([
+        "commands",
+        "  ls [-a]         list files",
+        "  cd <dir>        change directory",
+        "  cat <file>      print a file",
+        "  open <file>     follow a link",
+        "  now             what I'm on right now",
+        "  contact         ways to reach me",
+        "  whoami  id  pwd  uname  date  history  clear",
+        "",
+        "  tab completes. up/down for history. a few commands aren't listed."
+      ].join("\n"));
+    },
+    ls: function (a) {
+      var all = a.some(function (x) { return /^-\w*a/.test(x); });
+      var target = a.filter(function (x) { return x[0] !== "-"; })[0];
+      if (target === "/var/log" || target === "/var/log/") { say("auth.log  ufw.log"); return; }
+      var dir = target ? norm(target) : cwd;
+      if (target === "notes" || target === "notes/") { say("ls: cannot open directory 'notes': Permission denied"); return; }
+      if (!FS[dir]) { say("ls: cannot access '" + target + "': No such file or directory"); return; }
+      var items = FS[dir].slice();
+      if (all) items = [".", ".."].concat(dir === "~" ? [".bash_history"] : []).concat(items);
+      say(items.join("  "));
+    },
+    tree: function () {
+      var t = document.querySelector(".tree"); if (!t) return;
+      var d = div(); d.innerHTML = t.innerHTML; add(d); // static markup we wrote, not user input
+    },
+    cd: function (a) {
+      var t = a[0];
+      if (t === "notes" || t === "notes/" || t === "~/notes") { say("cd: notes: Permission denied (still writing it)"); return; }
+      var dir = norm(t);
+      if (FS[dir]) { cwd = dir; ps.textContent = prompt(); return; }
+      if (dir === ".." || t === "/" || /^\/(?!home\/packetwarden)/.test(t || "")) { say("cd: " + t + ": Permission denied"); return; }
+      if (LINKS[t] || t === "README.txt") { say("cd: " + t + ": Not a directory"); return; }
+      say("cd: " + t + ": No such file or directory");
+    },
+    pwd: function () { say(cwd === "~" ? "/home/packetwarden" : "/home/packetwarden/work"); },
+    cat: function (a) {
+      if (!a.length) { say("usage: cat <file>"); return; }
+      a.forEach(function (f) {
+        var name = f.replace(/^\.\//, "");
+        if (name === "README.txt" && cwd === "~" || name === "~/README.txt" || name === "/home/packetwarden/README.txt") {
+          async(readme().then(printNodes)); return;
+        }
+        if (name === ".bash_history" && cwd === "~") { say(hist.length ? hist.join("\n") : ""); return; }
+        if (LINKS[name] && here(name)) { sayLink(name + " -> ", LINKS[name][1], LINKS[name][0]); return; }
+        if (name === "work" || name === "work/") { say("cat: " + f + ": Is a directory"); return; }
+        if (name === "/etc/passwd") {
+          say("root:x:0:0:root:/root:/bin/bash\npacketwarden:x:1000:1000::/home/packetwarden:/bin/bash\nguest:x:1001:1001:you:/home/packetwarden:/bin/rbash"); return;
+        }
+        if (name === "/etc/shadow") { say("cat: /etc/shadow: Permission denied"); return; }
+        var m = name.match(/^\/var\/log\/(auth|ufw)\.log$/);
+        if (m) { var l = logs[m[1] + ".log"]; say(l.length ? l.join("\n") : "-- no entries --", "dim"); return; }
+        say("cat: " + f + ": No such file or directory");
+      });
+    },
+    vim: function () { say("opening README.txt..."); setTimeout(function () { location.href = "about.html"; }, 350); },
+    open: function (a) {
+      var t = (a[0] || "").replace(/^\.\//, "");
+      if (t === "README.txt") return run.vim();
+      if (LINKS[t] && here(t)) {
+        var href = LINKS[t][0];
+        if (href.indexOf("mailto:") === 0) location.href = href; else window.open(href, "_blank", "noopener");
+        say("opening " + t + "..."); return;
+      }
+      say(a[0] ? "open: " + a[0] + ": No such file" : "usage: open <file>");
+    },
+    now: function () { async(readme().then(function (n) { printNodes(nowLines(n)); })); },
+    contact: function () {
+      sayLink("mail    ", MAIL, "mailto:" + MAIL);
+      sayLink("signal  ", "packetwarden.22", SIGNAL);
+      sayLink("github  ", "ThePacketWarden", LINKS.github[0]);
+    },
+    whoami: function () { say("guest"); },
+    id: function () { say("uid=1001(guest) gid=1001(guest) groups=1001(guest)"); },
+    hostname: function () { say("houston"); },
+    uname: function (a) { say(a.indexOf("-a") >= 0 ? "Linux houston 6.16.0-pages #1 SMP PREEMPT_DYNAMIC x86_64 GNU/Linux" : "Linux"); },
+    date: function () { say(new Date().toString()); },
+    echo: function (a) { say(a.join(" ")); },
+    history: function () { say(hist.map(function (h, i) { return ("    " + (i + 1)).slice(-5) + "  " + h; }).join("\n")); },
+    clear: function () { out.textContent = ""; },
+    sudo: function (a) {
+      logs["auth.log"].push(stamp() + " houston sudo: guest : user NOT in sudoers ; TTY=pts/0 ; PWD=" +
+        (cwd === "~" ? "/home/packetwarden" : "/home/packetwarden/work") + " ; USER=root ; COMMAND=" + (a.join(" ") || "/bin/bash"));
+      say("[sudo] password for guest:\nguest is not in the sudoers file.\nThis incident will be reported.");
+    },
+    su: function () {
+      logs["auth.log"].push(stamp() + " houston su[1001]: FAILED SU (to root) guest on pts/0");
+      say("Password:\nsu: Authentication failure");
+    },
+    ssh: function () {
+      say("ssh: connect to host houston port 22: Connection refused\n  port 22 is a signal username now. try: open signal");
+    },
+    nmap: function () {
+      logs["ufw.log"].push(stamp() + " houston kernel: [UFW BLOCK] IN=eth0 SRC=guest DST=houston PROTO=TCP DPT=22 SYN");
+      say([
+        "Starting Nmap 7.95 ( https://nmap.org )",
+        "Nmap scan report for houston",
+        "Host is up.",
+        "PORT    STATE  SERVICE",
+        "22/tcp  closed ssh",
+        "443/tcp open   https",
+        "",
+        "Nmap done: 1 IP address (1 host up)"
+      ].join("\n"));
+      say("note: logged to /var/log/ufw.log. watching for this is kind of my whole thing.", "dim");
+    },
+    ping: function (a) { say("PING " + (a[0] || "houston") + ": you're already here."); },
+    rm: function (a) {
+      var s = a.join(" ");
+      if (/-\w*r\w*f|-\w*f\w*r/.test(s) && /(^|\s)\/(\s|$)/.test(s)) {
+        if (s.indexOf("--no-preserve-root") >= 0) { say("rm: it's GitHub Pages. it'd redeploy before you finished reading this."); return; }
+        say("rm: it is dangerous to operate recursively on '/'\nrm: use --no-preserve-root to override this failsafe"); return;
+      }
+      say("rm: read-only file system");
+    },
+    man: function (a) { say(a[0] ? "No manual entry for " + a[0] + ". try: help" : "What manual page do you want?"); },
+    exit: function () {
+      say("logout\nConnection to houston closed.", "dim");
+      busy = true; line.hidden = true;
+      setTimeout(function () {
+        say("...reconnected. it's a static page, there's nowhere to go.", "dim");
+        busy = false; line.hidden = false; render();
+        line.scrollIntoView({ block: "nearest" });
+      }, 1100);
+    }
+  };
+  run.dir = run.ls; run["ls"] = run.ls; run.ll = function () { run.ls(["-a"]); };
+  run.vi = run.nvim = run.nano = run.less = run.more = run.vim;
+  run.logout = run.exit;
+  run.cls = run.clear;
+
+  function exec(raw) {
+    var text = raw.trim();
+    echo(raw);
+    if (!text) return;
+    if (hist[hist.length - 1] !== text) hist.push(text);
+    hpos = hist.length;
+    var parts = text.split(/\s+/), cmd = parts[0], args = parts.slice(1);
+    if (Object.prototype.hasOwnProperty.call(run, cmd)) run[cmd](args);
+    else if (LINKS[cmd] && here(cmd)) say(cmd + ": is a link, not a command. try: open " + cmd);
+    else say(cmd + ": command not found");
+  }
+
+  /* ---------- tab completion */
+
+  function complete() {
+    var v = inp.value, parts = v.split(" "), last = parts[parts.length - 1];
+    var pool = parts.length === 1 ? CMDS : (FS[cwd] || []).concat(parts[0] === "cat" && cwd === "~" ? [".bash_history"] : []);
+    var hits = pool.filter(function (x) { return x.indexOf(last) === 0; });
+    if (hits.length === 1) {
+      parts[parts.length - 1] = hits[0] + (/\/$/.test(hits[0]) ? "" : " ");
+      inp.value = parts.join(" ");
+    } else if (hits.length > 1) {
+      echo(v); say(hits.join("  "));
+      var common = hits.reduce(function (a, b) { var i = 0; while (i < a.length && a[i] === b[i]) i++; return a.slice(0, i); });
+      parts[parts.length - 1] = common; inp.value = parts.join(" ");
+    }
+  }
+
+  /* ---------- mirror the hidden input into the visible line */
+
+  function render() {
+    var v = inp.value, p = inp.selectionStart == null ? v.length : inp.selectionStart;
+    cPre.textContent = v.slice(0, p);
+    cCur.textContent = v[p] && v[p] !== " " ? v[p] : " ";
+    cPost.textContent = v.slice(p + 1);
+    hint.hidden = used || v.length > 0;
+    cCur.classList.toggle("idle", document.activeElement !== inp);
+  }
+  var solidT;
+  function poke() {
+    cCur.classList.add("solid");
+    clearTimeout(solidT); solidT = setTimeout(function () { cCur.classList.remove("solid"); }, 600);
+    render();
+  }
+
+  inp.addEventListener("keydown", function (e) {
+    if (busy) { e.preventDefault(); return; }
+    if (e.key === "Enter") {
+      e.preventDefault(); used = true;
+      var v = inp.value; inp.value = "";
+      exec(v); render(); line.scrollIntoView({ block: "nearest" });
+    } else if (e.key === "Tab") {
+      e.preventDefault(); complete(); poke();
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault(); if (hpos > 0) { hpos--; inp.value = hist[hpos]; } poke();
+      setTimeout(function () { inp.setSelectionRange(inp.value.length, inp.value.length); render(); });
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault(); if (hpos < hist.length) { hpos++; inp.value = hist[hpos] || ""; } poke();
+    } else if (e.ctrlKey && (e.key === "l" || e.key === "L")) {
+      e.preventDefault(); out.textContent = ""; render();
+    } else if (e.ctrlKey && (e.key === "c" || e.key === "C") && inp.selectionStart === inp.selectionEnd) {
+      e.preventDefault(); echo(inp.value + "^C"); inp.value = ""; render();
+    } else {
+      setTimeout(poke);
+    }
+  });
+  inp.addEventListener("input", poke);
+  inp.addEventListener("focus", render);
+  inp.addEventListener("blur", render);
+  document.addEventListener("selectionchange", function () { if (document.activeElement === inp) render(); });
+  document.querySelector(".term").addEventListener("click", function (e) {
+    if (e.target.closest("a") || String(window.getSelection())) return;
+    inp.focus({ preventScroll: true });
+  });
+
+  render();
+  // desktop: ready to type immediately. touch: wait for a tap so the keyboard doesn't jump up
+  if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) inp.focus({ preventScroll: true });
+  render();
+})();
+</script>
+
 </body>
 </html>
