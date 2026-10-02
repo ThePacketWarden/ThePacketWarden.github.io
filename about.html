@@ -130,6 +130,9 @@
   }
   @keyframes blink { 50% { opacity: 0; } }
   @media (prefers-reduced-motion: reduce) { .cursor { animation: none; } }
+
+  .vhint { color: var(--p-low); }
+  @media (hover: none) { .vhint { display: none; } }
 </style>
 </head>
 <body>
@@ -138,73 +141,102 @@
 <span class="ln">  1</span><span class="lt">PACKETWARDEN</span>
 <span class="ln">  2</span><span class="lt">============</span>
 <span class="ln">  3</span><span class="lt">&nbsp;</span>
-<span class="ln">  4</span><span class="lt">Networking and Linux, pointed at blue team.</span>
+<span class="ln">  4</span><span class="lt">Networks, Linux, and the logs in between.</span>
 <span class="ln">  5</span><span class="lt">Houston, TX.</span>
 <span class="ln">  6</span><span class="lt">&nbsp;</span>
 <span class="ln">  7</span><span class="lt">NOW</span>
 <span class="ln">  8</span><span class="lt">---</span>
 <span class="ln">  9</span><span class="lt">&nbsp;</span>
-<span class="ln"> 10</span><span class="lt">CCNA 200-301, sitting it in December</span>
-<span class="ln"> 11</span><span class="lt">Building a KVM lab, then auditd on the guest</span>
-<span class="ln"> 12</span><span class="lt">  Writing it up as I go</span>
-<span class="ln"> 13</span><span class="lt">&nbsp;</span>
-<span class="ln"> 14</span><span class="lt">WHAT I WORK ON</span>
-<span class="ln"> 15</span><span class="lt">--------------</span>
-<span class="ln"> 16</span><span class="lt">&nbsp;</span>
-<span class="ln"> 17</span><span class="lt">networking</span>
-<span class="ln"> 18</span><span class="lt">  Routing, switching, VLANs, OSPF, ACLs</span>
-<span class="ln"> 19</span><span class="lt">  Labbing it until it's boring</span>
-<span class="ln"> 20</span><span class="lt">&nbsp;</span>
-<span class="ln"> 21</span><span class="lt">linux</span>
-<span class="ln"> 22</span><span class="lt">  Fedora daily driver</span>
-<span class="ln"> 23</span><span class="lt">  systemd, auditd, SELinux: how they log</span>
-<span class="ln"> 24</span><span class="lt">  and what they actually catch</span>
-<span class="ln"> 25</span><span class="lt">&nbsp;</span>
-<span class="ln"> 26</span><span class="lt">detection</span>
-<span class="ln"> 27</span><span class="lt">  Where the networking and the logs meet</span>
-<span class="ln"> 28</span><span class="lt">  The thing all of this is building toward</span>
-<span class="ln"> 29</span><span class="lt">&nbsp;</span>
-<span class="ln"> 30</span><span class="lt">SCHOOL</span>
-<span class="ln"> 31</span><span class="lt">------</span>
+<span class="ln"> 10</span><span class="lt">CCNA 200-301 in December. Date's locked.</span>
+<span class="ln"> 11</span><span class="lt">  Boson NetSim labs, ExSim-Max exams,</span>
+<span class="ln"> 12</span><span class="lt">  and a 2,000+ card Anki deck</span>
+<span class="ln"> 13</span><span class="lt">Freelance IT help, small for now</span>
+<span class="ln"> 14</span><span class="lt">&nbsp;</span>
+<span class="ln"> 15</span><span class="lt">HOW IT STARTED</span>
+<span class="ln"> 16</span><span class="lt">--------------</span>
+<span class="ln"> 17</span><span class="lt">&nbsp;</span>
+<span class="ln"> 18</span><span class="lt">A laptop with no graphics card and a</span>
+<span class="ln"> 19</span><span class="lt">copy of Fallout 3 I wanted to mod.</span>
+<span class="ln"> 20</span><span class="lt">Fighting it to run is how I learned</span>
+<span class="ln"> 21</span><span class="lt">what an operating system was.</span>
+<span class="ln"> 22</span><span class="lt">Before that: a modded Xbox 360.</span>
+<span class="ln"> 23</span><span class="lt">Same itch, different box.</span>
+<span class="ln"> 24</span><span class="lt">&nbsp;</span>
+<span class="ln"> 25</span><span class="lt">HOW I LEARN</span>
+<span class="ln"> 26</span><span class="lt">-----------</span>
+<span class="ln"> 27</span><span class="lt">&nbsp;</span>
+<span class="ln"> 28</span><span class="lt">Run it on the real thing.</span>
+<span class="ln"> 29</span><span class="lt">Screenshot every step.</span>
+<span class="ln"> 30</span><span class="lt">Ask why until it makes sense.</span>
+<span class="ln"> 31</span><span class="lt">Then it goes in the Anki deck.</span>
 <span class="ln"> 32</span><span class="lt">&nbsp;</span>
-<span class="ln"> 33</span><span class="lt">Houston Community College</span>
-<span class="ln"> 34</span><span class="lt">AAS, Computer Systems Networking</span>
-<span class="ln"> 35</span><span class="lt">Cybersecurity specialization</span>
-<span class="ln"> 36</span><span class="lt">4.0 GPA, 11 credits left</span>
-<span class="ln"> 37</span><span class="lt">&nbsp;</span>
-<span class="ln"> 38</span><span class="lt">UPSTREAM</span>
-<span class="ln"> 39</span><span class="lt">--------</span>
-<span class="ln"> 40</span><span class="lt">&nbsp;</span>
-<span class="ln"> 41</span><span class="lt">lk2nd</span>
-<span class="ln"> 42</span><span class="lt">  Bootloader support for the Galaxy S4</span>
-<span class="ln"> 43</span><span class="lt">  (SGH-M919). First upstream patch,</span>
-<span class="ln"> 44</span><span class="lt">  merged after review.</span>
-<span class="ln"> 45</span><span class="lt">  <a href="https://github.com/msm8916-mainline/lk2nd/pull/753">lk2nd#753</a></span>
-<span class="ln"> 46</span><span class="lt">&nbsp;</span>
-<span class="ln"> 47</span><span class="lt">COMMUNITY</span>
-<span class="ln"> 48</span><span class="lt">---------</span>
+<span class="ln"> 33</span><span class="lt">WHAT I'M INTO</span>
+<span class="ln"> 34</span><span class="lt">-------------</span>
+<span class="ln"> 35</span><span class="lt">&nbsp;</span>
+<span class="ln"> 36</span><span class="lt">networking</span>
+<span class="ln"> 37</span><span class="lt">  Routing, switching, VLANs, OSPF, ACLs.</span>
+<span class="ln"> 38</span><span class="lt">  The CCNA stuff, labbed until it sticks.</span>
+<span class="ln"> 39</span><span class="lt">&nbsp;</span>
+<span class="ln"> 40</span><span class="lt">linux</span>
+<span class="ln"> 41</span><span class="lt">  Fedora daily driver. My day is a</span>
+<span class="ln"> 42</span><span class="lt">  terminal and a lot of shortcuts.</span>
+<span class="ln"> 43</span><span class="lt">&nbsp;</span>
+<span class="ln"> 44</span><span class="lt">security</span>
+<span class="ln"> 45</span><span class="lt">  Blue team is where I'm headed.</span>
+<span class="ln"> 46</span><span class="lt">  OPSEC and PERSEC are how I already</span>
+<span class="ln"> 47</span><span class="lt">  live. No real name on this site.</span>
+<span class="ln"> 48</span><span class="lt">  That's on purpose.</span>
 <span class="ln"> 49</span><span class="lt">&nbsp;</span>
-<span class="ln"> 50</span><span class="lt">HCC Cybersecurity Club, 2022 to 2025</span>
-<span class="ln"> 51</span><span class="lt">  Executive administrator, later president</span>
-<span class="ln"> 52</span><span class="lt">  Brought in speakers from Houston's</span>
-<span class="ln"> 53</span><span class="lt">  security community, ran the meetups</span>
-<span class="ln"> 54</span><span class="lt">  and the budget</span>
-<span class="ln"> 55</span><span class="lt">&nbsp;</span>
-<span class="ln"> 56</span><span class="lt">DEF CON 31</span>
-<span class="ln"> 57</span><span class="lt">  AI Village, Generative Red Team CTF</span>
-<span class="ln"> 58</span><span class="lt">  Attended through an HCC partnership</span>
-<span class="ln"> 59</span><span class="lt">  Volunteered with event operations</span>
-<span class="ln"> 60</span><span class="lt">&nbsp;</span>
-<span class="ln"> 61</span><span class="lt">Houston</span>
-<span class="ln"> 62</span><span class="lt">  Regular at the local security meetups</span>
-<span class="ln"> 63</span><span class="lt">  and BSides Houston. Say hi.</span>
+<span class="ln"> 50</span><span class="lt">AI</span>
+<span class="ln"> 51</span><span class="lt">  Use it daily. DEF CON's red team</span>
+<span class="ln"> 52</span><span class="lt">  village got me curious where it breaks.</span>
+<span class="ln"> 53</span><span class="lt">&nbsp;</span>
+<span class="ln"> 54</span><span class="lt">UPSTREAM</span>
+<span class="ln"> 55</span><span class="lt">--------</span>
+<span class="ln"> 56</span><span class="lt">&nbsp;</span>
+<span class="ln"> 57</span><span class="lt">lk2nd</span>
+<span class="ln"> 58</span><span class="lt">  Linux on a Galaxy S4 from 2013.</span>
+<span class="ln"> 59</span><span class="lt">  My model wasn't supported, so I got</span>
+<span class="ln"> 60</span><span class="lt">  it booting and sent the support</span>
+<span class="ln"> 61</span><span class="lt">  upstream. Merged. The battery is</span>
+<span class="ln"> 62</span><span class="lt">  older than the code, and it shows.</span>
+<span class="ln"> 63</span><span class="lt">  <a href="https://github.com/msm8916-mainline/lk2nd/pull/753">lk2nd#753</a></span>
 <span class="ln"> 64</span><span class="lt">&nbsp;</span>
-<span class="ln"> 65</span><span class="lt">CONTACT</span>
-<span class="ln"> 66</span><span class="lt">-------</span>
+<span class="ln"> 65</span><span class="lt">COMMUNITY</span>
+<span class="ln"> 66</span><span class="lt">---------</span>
 <span class="ln"> 67</span><span class="lt">&nbsp;</span>
-<span class="ln"> 68</span><span class="lt">  <a href="https://github.com/ThePacketWarden">github.com/ThePacketWarden</a></span>
-<span class="ln"> 69</span><span class="lt">  <span id="m-t">packetwarden [at] proton.me</span></span>
-<span class="ln"> 70</span><span class="lt">  <a href="https://signal.me/#eu/3xXWIZkzr3HrpzHfBL_L0taTZ-Mt56hHbqYhwqd0a0IXvXMrdHNKkIIAIpcAv5WL">packetwarden.22</a> (signal)</span>
+<span class="ln"> 68</span><span class="lt">HCC Cybersecurity Club, 2022 to 2025</span>
+<span class="ln"> 69</span><span class="lt">  Executive administrator, then president</span>
+<span class="ln"> 70</span><span class="lt">  Brought Houston security people in to</span>
+<span class="ln"> 71</span><span class="lt">  talk to students. Ran the meetups and</span>
+<span class="ln"> 72</span><span class="lt">  the budget.</span>
+<span class="ln"> 73</span><span class="lt">&nbsp;</span>
+<span class="ln"> 74</span><span class="lt">DEF CON 31</span>
+<span class="ln"> 75</span><span class="lt">  AI Village, Generative Red Team CTF</span>
+<span class="ln"> 76</span><span class="lt">  Volunteered with event operations</span>
+<span class="ln"> 77</span><span class="lt">&nbsp;</span>
+<span class="ln"> 78</span><span class="lt">SCHOOL</span>
+<span class="ln"> 79</span><span class="lt">------</span>
+<span class="ln"> 80</span><span class="lt">&nbsp;</span>
+<span class="ln"> 81</span><span class="lt">Houston Community College</span>
+<span class="ln"> 82</span><span class="lt">AAS, Computer Systems Networking</span>
+<span class="ln"> 83</span><span class="lt">Cybersecurity specialization</span>
+<span class="ln"> 84</span><span class="lt">4.0 GPA, finishing in 2027</span>
+<span class="ln"> 85</span><span class="lt">&nbsp;</span>
+<span class="ln"> 86</span><span class="lt">ASK ME ABOUT</span>
+<span class="ln"> 87</span><span class="lt">------------</span>
+<span class="ln"> 88</span><span class="lt">&nbsp;</span>
+<span class="ln"> 89</span><span class="lt">Networking. Linux. AI. OPSEC.</span>
+<span class="ln"> 90</span><span class="lt">Mr. Robot, if you've got an hour.</span>
+<span class="ln"> 91</span><span class="lt">I'm at the Houston meetups and BSides.</span>
+<span class="ln"> 92</span><span class="lt">Say hi.</span>
+<span class="ln"> 93</span><span class="lt">&nbsp;</span>
+<span class="ln"> 94</span><span class="lt">CONTACT</span>
+<span class="ln"> 95</span><span class="lt">-------</span>
+<span class="ln"> 96</span><span class="lt">&nbsp;</span>
+<span class="ln"> 97</span><span class="lt">  <a href="https://github.com/ThePacketWarden">github.com/ThePacketWarden</a></span>
+<span class="ln"> 98</span><span class="lt">  <span id="m-t">packetwarden [at] proton.me</span></span>
+<span class="ln"> 99</span><span class="lt">  <a href="https://signal.me/#eu/3xXWIZkzr3HrpzHfBL_L0taTZ-Mt56hHbqYhwqd0a0IXvXMrdHNKkIIAIpcAv5WL">packetwarden.22</a> (signal)</span>
 <span class="tilde">~</span><span class="lt"></span>
 <span class="tilde">~</span><span class="lt"></span>
 <span class="tilde">~</span><span class="lt"></span>
@@ -216,10 +248,10 @@
 
 <div class="status">
   <span>"README.txt"</span>
-  <span>70L, 1286B</span>
+  <span>99L, 1887B</span>
 </div>
 
-<div class="cmdline"><a href="index.html">:q</a><span class="cursor" aria-hidden="true"></span></div>
+<div class="cmdline"><a href="index.html" id="quit">:q</a><span id="cmd-typed"></span><span class="cursor" aria-hidden="true"></span><span class="vhint" id="vhint"> j/k scroll, :q quit</span></div>
 
 <script>
 (function () {
@@ -230,5 +262,58 @@
 })();
 </script>
 
+
+<script>
+/* vim keys: :q :wq :x :q! ZZ quit, j/k gg G ctrl-d/u scroll, esc cancels */
+(function () {
+  var typed = document.getElementById("cmd-typed"), quit = document.getElementById("quit"),
+      hint = document.getElementById("vhint");
+  var mode = null, buf = "", last = "", lastT = 0;
+  var line = function () { return parseFloat(getComputedStyle(document.body).lineHeight) || 20; };
+  function show() {
+    quit.style.display = mode ? "none" : "";
+    typed.textContent = mode ? ":" + buf : "";
+  }
+  function go() { location.href = "index.html"; }
+  function msg(t) { mode = null; buf = ""; show(); typed.textContent = t; }
+  document.addEventListener("keydown", function (e) {
+    if (e.ctrlKey || e.metaKey || e.altKey) {
+      if (e.ctrlKey && (e.key === "d" || e.key === "u")) {
+        e.preventDefault(); window.scrollBy(0, (e.key === "d" ? 1 : -1) * innerHeight / 2);
+      }
+      return;
+    }
+    if (hint) { hint.remove(); hint = null; }
+    if (mode) {
+      e.preventDefault();
+      if (e.key === "Escape") { mode = null; buf = ""; show(); }
+      else if (e.key === "Backspace") { if (!buf) { mode = null; } buf = buf.slice(0, -1); show(); }
+      else if (e.key === "Enter") {
+        var c = buf.trim();
+        if (/^(q|q!|wq|wq!|x|qa|qa!|wqa)$/.test(c)) go();
+        else if (c === "w") msg('"README.txt" E45: \'readonly\' option is set (add ! to override)');
+        else if (c === "w!") msg("E212: Can't open file for writing. it's GitHub Pages.");
+        else if (/^\d+$/.test(c)) { var t = document.querySelectorAll(".ln")[+c - 1]; if (t) t.scrollIntoView({ block: "center" }); mode = null; buf = ""; show(); }
+        else msg("E492: Not an editor command: " + c);
+      }
+      else if (e.key.length === 1) { buf += e.key; show(); }
+      return;
+    }
+    var now = Date.now(), dbl = function (k) { return last === k && now - lastT < 600; };
+    switch (e.key) {
+      case ":": e.preventDefault(); mode = ":"; buf = ""; show(); break;
+      case "j": case "ArrowDown": e.preventDefault(); window.scrollBy(0, line()); break;
+      case "k": case "ArrowUp": e.preventDefault(); window.scrollBy(0, -line()); break;
+      case "G": window.scrollTo(0, document.body.scrollHeight); break;
+      case "g": if (dbl("g")) window.scrollTo(0, 0); break;
+      case "Z": if (dbl("Z")) go(); break;
+      case "q": go(); break;
+      case "i": case "a": case "o": msg("-- INSERT -- (just kidding, it's read-only)"); break;
+      case "Escape": msg(""); break;
+    }
+    last = e.key; lastT = now;
+  });
+})();
+</script>
 </body>
 </html>
