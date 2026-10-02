@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<!-- delete this robots line when you copy the template into a real note -->
+<meta name="robots" content="noindex">
+<title>NOTE TITLE | PacketWarden</title>
+<meta name="description" content="One-line summary. Shows up in search results and link previews.">
+<meta name="theme-color" content="#030604">
+<meta name="color-scheme" content="only dark">
+<link rel="stylesheet" href="note.css">
+</head>
+<body>
+<main>
+
+<p class="prompt">packetwarden@houston:<a href="../">~</a>/<a href="./">notes</a>$ <span class="cmd">cat slug.txt</span></p>
+
+<article>
+
+<h1>Note title</h1>
+<p class="meta">
+  <span><time datetime="2026-10-01">2026-10-01</time></span>
+  <span>linux, kvm</span>
+</p>
+
+<p>Open with what you were trying to do and why. One or two sentences.</p>
+
+<h2>Setup</h2>
+
+<ul>
+  <li>Host: Fedora, what hardware</li>
+  <li>Guest: what OS, what for</li>
+</ul>
+
+<h2>Steps</h2>
+
+<p>Commands go in a pre block. Wrap what you typed in <code>.u</code> and comments in <code>.c</code> if you want them colored, otherwise plain text is fine.</p>
+
+<pre><code><span class="c"># check the CPU supports virtualization</span>
+<span class="u">grep -Ec '(vmx|svm)' /proc/cpuinfo</span>
+8</code></pre>
+
+<h3>Subsection</h3>
+
+<p>Inline commands look like <code>systemctl status libvirtd</code>.</p>
+
+<h2>What broke</h2>
+
+<p>The part people actually learn from. What went wrong, what the error was, how you figured it out.</p>
+
+<h2>What I'd do differently</h2>
+
+<p>Short.</p>
+
+<hr>
+
+<p class="meta"><span>refs</span></p>
+<ul>
+  <li><a href="https://example.com">link to docs you used</a></li>
+</ul>
+
+</article>
+
+<div class="cmdline"><a href="./">:q</a> <span class="cursor" aria-hidden="true"></span></div>
+
+</main>
+</body>
+</html>
